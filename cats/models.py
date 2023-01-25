@@ -1,8 +1,22 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
+CHOICES = (
+        ('Gray', 'Серый'),
+        ('Black', 'Чёрный'),
+        ('White', 'Белый'),
+        ('Ginger', 'Рыжий'),
+        ('Mixed', 'Смешанный'),
+    )
+
+User = get_user_model()
+
+
 class Achievement(models.Model):
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64)  # заменяем через сериализотор
+    # в классе AchievementSerializer
+    # achievement_name = serializers.CharField(source='name')
 
     def __str__(self):
         return self.name
@@ -18,7 +32,9 @@ class Owner(models.Model):
 
 class Cat(models.Model):
     name = models.CharField(max_length=16)
-    color = models.CharField(max_length=16)
+    # color = models.CharField(max_length=16)
+    # color теперь изменим , что бы подхватывал справочник
+    color = models.CharField(max_length=16, choices=CHOICES)
     birth_year = models.IntegerField()
     # Новое поле в модели:
     owner = models.ForeignKey(

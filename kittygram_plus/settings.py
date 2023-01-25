@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,17 +30,50 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+# подключите и настройте JWT-аутентификацию
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.auth',          # для JWT-аутентификацию
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+    'rest_framework',               # для JWT-аутентификацию
+    'djoser',                       # для JWT-аутентификацию
+    # 'rest_framework.authtoken',   # добавили для работы с authtoken токенами
     'cats.apps.CatsConfig',
 ]
+
+# это надо и для  JWT  и для authtoken
+# 1. в настройках REST_FRAMEWORK объявляем
+#  		новый способ аутентификации TokenAuthentication.
+# 2. запрещаем доступ всем неаутентифицированным пользователям:
+# ограничение доступа настраивается с помощью пермишенов
+# 		 (англ. permissions, «разрешения»). Чтобы запретить доступ без токена,
+# 		 нужно добавить значение IsAuthenticated
+# для ключа DEFAULT_PERMISSION_CLASSES:
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    # Это надо было для authtoken
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ]
+    # это надо для  JWT
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+# это надо и для  JWT
+SIMPLE_JWT = {
+    # Устанавливаем срок жизни токена
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
